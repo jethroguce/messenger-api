@@ -1,7 +1,6 @@
 # Table of Contents
 1. Requirements
 1. Setting Up
-1. Facebook Messenger Webhooks
 1. Receiving Messages
 1. Sending Messages
 1. Templates
@@ -22,3 +21,6 @@ What we would need?
 
 ## Receiving Message
 1. Add Support for Post Method
+
+## Sending Message
+1. Create function to access fb graph api

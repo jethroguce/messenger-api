@@ -1,7 +1,9 @@
 import os
 from flask import Flask, request
+from requests import post
 
 FB_VERIFY_TOKEN = os.environ.get('FB_VERIFY_TOKEN')
+FB_PAGE_TOKEN = os.environ.get('FB_PAGE_TOKEN')
 
 app = Flask(__name__)
 
@@ -25,10 +27,22 @@ def messenger_webhook():
                 if message:
                     fb_id = message['sender']['id']
                     text = message['message']['text']
-                    print(fb_id, text)
+                    fb_send_message(fb_id, text)
         else:
             return 'Unknown Event'
         return 'OK'
+
+
+def fb_send_message(fb_id, message):
+    data = {
+        'recipient': {'id': fb_id},
+        'message': {'text': message}
+    }
+    token = 'access_token={}'.format(FB_PAGE_TOKEN)
+    url = 'https://graph.facebook.com/me/messages?{}'.format(token)
+    res = post(url, json=data)
+
+    return res.json()
 
 
 if __name__ == '__main__':
