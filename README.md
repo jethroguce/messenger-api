@@ -16,7 +16,7 @@ What we would need?
 
 ## Setting Up
 1. Create Facebook Page
-2. Create Facebook App
-3. Set Up WebHooks -> FB_VERIFY_TOKEN
-4. Request Page Access -> FB_PAGE_TOKEN
+1. Create Facebook App
+1. Request Page Access -> FB_PAGE_TOKEN
+1. Set Up WebHooks -> FB_VERIFY_TOKEN
 
