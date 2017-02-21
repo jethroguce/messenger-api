@@ -20,3 +20,5 @@ What we would need?
 1. Request Page Access -> FB_PAGE_TOKEN
 1. Set Up WebHooks -> FB_VERIFY_TOKEN
 
+## Receiving Message
+1. Add Support for Post Method

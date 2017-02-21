@@ -18,8 +18,17 @@ def messenger_webhook():
             return 'Invalid Request or Verification Token'
     elif request.method == 'POST':
         data = request.json
-        print(data)
-        return ''
+        if data['object'] == 'page':
+            for entry in data['entry']:
+                messages = entry['messaging']
+                message = messages[0]
+                if message:
+                    fb_id = message['sender']['id']
+                    text = message['message']['text']
+                    print(fb_id, text)
+        else:
+            return 'Unknown Event'
+        return 'OK'
 
 
 if __name__ == '__main__':
