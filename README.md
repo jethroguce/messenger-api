@@ -27,17 +27,17 @@ We use secure callbacks in order to send you messaging events. These will be sen
 ![Set Up Webhooks](etc/fb_app_2.png)
 1. Set Up WebHooks -> FB_VERIFY_TOKEN
 ![Set Up Webhooks](etc/fb_app_3.png)
-    ```python
-    @app.route('/messenger')
-    def messenger_webhook():
-        verify_token = request.args.get('hub.verify_token')
-        print(verify_token)
-        if verify_token == FB_VERIFY_TOKEN:
-            challenge = request.args.get('hub.challenge')
-            return challenge
-        else:
-            return 'Invalid Request or Verification Token'
-    ```
+```python
+@app.route('/messenger')
+def messenger_webhook():
+    verify_token = request.args.get('hub.verify_token')
+    print(verify_token)
+    if verify_token == FB_VERIFY_TOKEN:
+        challenge = request.args.get('hub.challenge')
+        return challenge
+    else:
+        return 'Invalid Request or Verification Token'
+```
 1. Subscribe App to a Page
 ![Set Up Webhooks](etc/fb_app_4.png)
 
