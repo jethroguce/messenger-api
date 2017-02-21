@@ -55,8 +55,62 @@ If you don't receive an update via your Webhook, please ensure you didn't receiv
 
 ### Receiving Message
 1. Add Support for Post Method
+All Callbacks for the Messenger Platfor have a common structure.
+```json
+{
+  "object":"page",
+  "entry":[
+    {
+      "id":"PAGE_ID",
+      "time":1458692752478,
+      "messaging":[
+        {
+          "sender":{
+            "id":"USER_ID"
+          },
+          "recipient":{
+            "id":"PAGE_ID"
+          },
+
+          ...
+        }
+      ]
+    }
+  ]
+}
+```
+```python
+@app.route('/messenger', methods=['GET', 'POST'])
+def messenger_webhook():
+    if request.method == 'GET':
+        verify_token = request.args.get('hub.verify_token')
+        print(verify_token)
+        if verify_token == FB_VERIFY_TOKEN:
+            challenge = request.args.get('hub.challenge')
+            return challenge
+        else:
+            return 'Invalid Request or Verification Token'
+    elif request.method == 'POST':
+        data = request.json
+        print(data)
+        return 'OK'
+```
+
 
 ### Sending Message
 1. Create function to access fb graph api
+```python
+def fb_send_message(fb_id, message):
+    data = {
+        'recipient': {'id': fb_id},
+        'message': {'text': message}
+    }
+    token = 'access_token={}'.format(FB_PAGE_TOKEN)
+    url = 'https://graph.facebook.com/v2.6/me/messages?{}'.format(token)
+    res = post(url, json=data)
+
+    return res.json()
+```
+
 
 ## Developing Our Application

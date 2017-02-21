@@ -39,7 +39,7 @@ def fb_send_message(fb_id, message):
         'message': {'text': message}
     }
     token = 'access_token={}'.format(FB_PAGE_TOKEN)
-    url = 'https://graph.facebook.com/me/messages?{}'.format(token)
+    url = 'https://graph.facebook.com/v2.6/me/messages?{}'.format(token)
     res = post(url, json=data)
 
     return res.json()
