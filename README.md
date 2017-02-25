@@ -119,12 +119,11 @@ Modify `application.py`
 @app.route('/messenger')
 def messenger_webhook():
     verify_token = request.args.get('hub.verify_token')
+    challenge = request.args.get('hub.challenge')
     print(verify_token)
-    if verify_token == <FB_VERIFY_TOKEN>:
-        challenge = request.args.get('hub.challenge')
+    if challenge and verify_token == FB_PAGE_TOKEN:
         return challenge
-    else:
-        return 'Invalid Request or Verification Token'
+    return 'Invalid Request or Verification Token'
 ```
 
 In the Messenger Platform tab, find the Webhooks section and click Setup Webhooks. Enter a URL for a webhook, define a Verify Token and select `messages`, and `messaging_postbacks` under Subscription Fields.
@@ -177,55 +176,33 @@ All Callbacks for the Messenger Platfor have a common structure.
 }
 ```
 ```python
-@app.route('/messenger', methods=['GET', 'POST'])
-def messenger_webhook():
-    if request.method == 'GET':
-        verify_token = request.args.get('hub.verify_token')
-        print(verify_token)
-        if verify_token == FB_VERIFY_TOKEN:
-            challenge = request.args.get('hub.challenge')
-            return challenge
-        else:
-            return 'Invalid Request or Verification Token'
-    elif request.method == 'POST':
-        data = request.json
-        print(data)
-        return 'OK'
+@app.route('/messenger', methods=['POST'])
+def send_message():
+    data = request.json
+    print(data)
+    return 'OK'
 ```
 
 
 #### 9. Sending Message
 Create function to access fb graph api
 ```python
+import requests
 ...
+@app.route('/messenger', methods=['POST'])
+def send_message():
+    data = request.json
+    if data['object'] != 'page':
+        return 'Unknown Event'
+    for entry in data['entry']:
+        messages = entry['messaging']
+        message = messages[0]
+        if message:
+            fb_id = message['sender']['id']
+            text = message['message']['text']
+            fb_send_message(fb_id, text)
+    return 'OK'
 
-from requests import post
-
-...
-
-@app.route('/messenger', methods=['GET', 'POST'])
-def messenger_webhook():
-    if request.method == 'GET':
-        verify_token = request.args.get('hub.verify_token')
-        print(verify_token)
-        if verify_token == FB_VERIFY_TOKEN:
-            challenge = request.args.get('hub.challenge')
-            return challenge
-        else:
-            return 'Invalid Request or Verification Token'
-    elif request.method == 'POST':
-        data = request.json
-        if data['object'] == 'page':
-            for entry in data['entry']:
-                messages = entry['messaging']
-                message = messages[0]
-                if message:
-                    fb_id = message['sender']['id']
-                    text = message['message']['text']
-                    fb_send_message(fb_id, text)
-        else:
-            return 'Unknown Event'
-        return 'OK'
 
 def fb_send_message(fb_id, message):
     data = {
@@ -234,8 +211,7 @@ def fb_send_message(fb_id, message):
     }
     token = 'access_token={}'.format(FB_PAGE_TOKEN)
     url = 'https://graph.facebook.com/v2.6/me/messages?{}'.format(token)
-    res = post(url, json=data)
-
+    res = requests.post(url, json=data)
     return res.json()
 
 ...
