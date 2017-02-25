@@ -242,6 +242,10 @@ def fb_send_message(fb_id, message):
 
 ```
 
+#### 10. Other Response Templates
+
+![Messenger CheatSheat](https://cdn-images-1.medium.com/max/2000/1*rGiRHME_Roqsgz2CUg5yrg.png)
+
 ## Tips and Guides
 Whether using a bot or implementing live messaging, it’s important to define the experience you want to create for yourself and the people you’re interacting with on Messenger. Before any messages get sent, take the time to:
 
