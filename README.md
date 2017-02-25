@@ -14,7 +14,8 @@ Here are a couple of other examples:
 - A bot that’s your friend. In China there is a bot called Xiaoice, built by Microsoft, that over 20 million people talk to.
 
 # How Chatbots Work
-There are two types of chatbots, one functions based on a set of rules, and the other more advanced version uses machine learning.
+There are two types of chatbots, one functions based on a set of rules, and the other more advanced ver
+sion uses machine learning.
 
 
 __What does this mean?__
@@ -56,7 +57,7 @@ We use secure callbacks in order to send you messaging events. These will be sen
 
 First we need to set up our application environment. 
 
-1. Create application directory, name it `messenger-bot`.
+#### 1. Create application directory, name it `messenger-bot`.
 ```
 $ mkdir ~/Documents/messenger-bot
 $ cd ~/Documents/messenger-bot
@@ -67,7 +68,7 @@ or
 > cd \pycon2017\messenger-bot
 ```
 
-2. Create a python virtualenvironment
+#### 2. Create a python virtualenvironment
 ```
 messenger-bot$ virtualenv env
 messenger-bot$ source env/bin/activate
@@ -80,15 +81,15 @@ messenger-bot> env\Scripts\Activate
 (env) messenger-bot> 
 ```
 
-3. Install python libraries that will need flask, requests
+#### 3. Install python libraries that will need flask, requests
 ```
 (env) messenger-bot$ pip install flask requests
 (env) messenger-bot$ pip freeze > requirements.txt
 ```
 
-4. Open your favorite text editor, and create a file named `application.py`
+#### 4. Open your favorite text editor, and create a file named `application.py`
 ```python
-from flask import Flask
+from flask import Flask, request
 
 app = Flask(__name__)
 
@@ -104,18 +105,16 @@ if __name__ == '__main__':
 
 Now open up your browser on `http://localhost:5000` and you should be able to see your web app running.
 
-5. Start ngrok http service so we can receive requests from the public
+#### 5. Open a terminal session from where you have downloaded ngrok and start ngrok http service so we can receive requests from the public
 ```
 $ ngrok http 5000 -region ap
 ```
 
 Now open your browser and try to access the assigned url, (i.e. `https://9ed93698.ap.ngrok.io`)
 
-6. Set up our messenger webhook
+#### 6. Set up our messenger webhook
 Webhooks are used to send us a variety of different events including messages, authentication events and callback events from messages.
-
-In the Messenger Platform tab, find the Webhooks section and click Setup Webhooks. Enter a URL for a webhook, define a Verify Token and select `messages`, and `messaging_postbacks` under Subscription Fields.
-![Set Up Webhooks](etc/fb_app_3.png)
+Modify `application.py`
 ```python
 @app.route('/messenger')
 def messenger_webhook():
@@ -128,9 +127,12 @@ def messenger_webhook():
         return 'Invalid Request or Verification Token'
 ```
 
+In the Messenger Platform tab, find the Webhooks section and click Setup Webhooks. Enter a URL for a webhook, define a Verify Token and select `messages`, and `messaging_postbacks` under Subscription Fields.
+![Set Up Webhooks](etc/fb_app_3.png)
+
 At our webhook URL, add code for verification. The code should expect the Verify Token we have previously defined, and respond with the challenge sent back in the verification request. Click the "Verify and Save" button in the New Page Subscription to call the webhook with a GET request.
 
-### Subscribe App to a Page
+#### 7. Subscribe App to a Page
 
 ![Set Up Webhooks](etc/fb_app_4.png)
 
@@ -144,9 +146,7 @@ If you don't receive an update via your Webhook, please ensure you didn't receiv
 > When your app is in Development Mode, plugin and API functionality will only work for admins, developers and testers of the app. After your app is approved and public, it will work for the general public.
 
 
-## Conversations
-
-### Receiving Message
+#### 8. Receiving Message
 
 Add Support for handling Post requests
 
@@ -194,9 +194,39 @@ def messenger_webhook():
 ```
 
 
-### Sending Message
+#### 9. Sending Message
 Create function to access fb graph api
 ```python
+...
+
+from requests import post
+
+...
+
+@app.route('/messenger', methods=['GET', 'POST'])
+def messenger_webhook():
+    if request.method == 'GET':
+        verify_token = request.args.get('hub.verify_token')
+        print(verify_token)
+        if verify_token == FB_VERIFY_TOKEN:
+            challenge = request.args.get('hub.challenge')
+            return challenge
+        else:
+            return 'Invalid Request or Verification Token'
+    elif request.method == 'POST':
+        data = request.json
+        if data['object'] == 'page':
+            for entry in data['entry']:
+                messages = entry['messaging']
+                message = messages[0]
+                if message:
+                    fb_id = message['sender']['id']
+                    text = message['message']['text']
+                    fb_send_message(fb_id, text)
+        else:
+            return 'Unknown Event'
+        return 'OK'
+
 def fb_send_message(fb_id, message):
     data = {
         'recipient': {'id': fb_id},
@@ -207,6 +237,9 @@ def fb_send_message(fb_id, message):
     res = post(url, json=data)
 
     return res.json()
+
+...
+
 ```
 
 ## Tips and Guides
@@ -224,3 +257,4 @@ Focus on doing a couple things really well; doing too much creates confusion and
 - https://www.facebook.com/groups/messengerplatform 
 - https://wit.ai/docs
 - https://chatbotsmagazine.com/
+- https://messengerblog.com/
