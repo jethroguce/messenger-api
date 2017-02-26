@@ -115,12 +115,13 @@ And then open your browser and try to access the assigned url, (i.e. `https://9e
 Webhooks are used to send us a variety of different events including messages, authentication events and callback events from messages.
 Modify `application.py`
 ```python
+
 @app.route('/messenger')
 def messenger_webhook():
     verify_token = request.args.get('hub.verify_token')
     challenge = request.args.get('hub.challenge')
     print(verify_token)
-    if challenge and verify_token == FB_PAGE_TOKEN:
+    if challenge and verify_token == <FB_VERIFY_TOKEN>:
         return challenge
     return 'Invalid Request or Verification Token'
 ```
@@ -209,7 +210,7 @@ def fb_send_message(fb_id, message):
         'recipient': {'id': fb_id},
         'message': {'text': message}
     }
-    token = 'access_token={}'.format(FB_PAGE_TOKEN)
+    token = 'access_token={}'.format(<FB_PAGE_TOKEN>)
     url = 'https://graph.facebook.com/v2.6/me/messages?{}'.format(token)
     res = requests.post(url, json=data)
     return res.json()

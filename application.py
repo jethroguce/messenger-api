@@ -3,7 +3,7 @@ import os
 import requests
 from flask import Flask, request
 
-
+FB_VERIFY_TOKEN = os.environ.get('FB_VERIFY_TOKEN')
 FB_PAGE_TOKEN = os.environ.get('FB_PAGE_TOKEN')
 app = Flask(__name__)
 
@@ -18,7 +18,7 @@ def messenger_webhook():
     verify_token = request.args.get('hub.verify_token')
     challenge = request.args.get('hub.challenge')
     print(verify_token)
-    if challenge and verify_token == FB_PAGE_TOKEN:
+    if challenge and verify_token == FB_VERIFY_TOKEN:
         return challenge
     return 'Invalid Request or Verification Token'
 
