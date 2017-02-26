@@ -14,8 +14,7 @@ Here are a couple of other examples:
 - A bot that’s your friend. In China there is a bot called Xiaoice, built by Microsoft, that over 20 million people talk to.
 
 # How Chatbots Work
-There are two types of chatbots, one functions based on a set of rules, and the other more advanced ver
-sion uses machine learning.
+There are two types of chatbots, one functions based on a set of rules, and the other more advanced version uses machine learning.
 
 
 __What does this mean?__
@@ -109,8 +108,8 @@ Now open up your browser on `http://localhost:5000` and you should be able to se
 ```
 $ ngrok http 5000 -region ap
 ```
-
-Now open your browser and try to access the assigned url, (i.e. `https://9ed93698.ap.ngrok.io`)
+You should now have 2 open terminals.
+And then open your browser and try to access the assigned url, (i.e. `https://9ed93698.ap.ngrok.io`)
 
 #### 6. Set up our messenger webhook
 Webhooks are used to send us a variety of different events including messages, authentication events and callback events from messages.
@@ -151,6 +150,14 @@ Add Support for handling Post requests
 
 Your webhook callback should always return a 200 OK HTTP response when invoked by Facebook. Failing to do so may cause your webhook to be unsubscribed by the Messenger Platform.
 
+```python
+@app.route('/messenger', methods=['POST'])
+def send_message():
+    data = request.json
+    print(data)
+    return 'OK'
+```
+
 All Callbacks for the Messenger Platfor have a common structure.
 ```json
 {
@@ -174,13 +181,6 @@ All Callbacks for the Messenger Platfor have a common structure.
     }
   ]
 }
-```
-```python
-@app.route('/messenger', methods=['POST'])
-def send_message():
-    data = request.json
-    print(data)
-    return 'OK'
 ```
 
 
@@ -217,6 +217,10 @@ def fb_send_message(fb_id, message):
 ...
 
 ```
+
+#### 10. Other Response Templates
+
+![Messenger CheatSheat](https://cdn-images-1.medium.com/max/2000/1*rGiRHME_Roqsgz2CUg5yrg.png)
 
 ## Tips and Guides
 Whether using a bot or implementing live messaging, it’s important to define the experience you want to create for yourself and the people you’re interacting with on Messenger. Before any messages get sent, take the time to:
